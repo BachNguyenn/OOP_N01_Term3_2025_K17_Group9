@@ -11,6 +11,7 @@
     <div th:replace="fragments/sidebar :: sidebar"></div>
     <div class="content-with-sidebar">
         <div class="container">
+        <div th:replace="fragments/notifications :: notifications"></div>
         <h2>Danh Sách Sinh Viên</h2>
         <div class="search-container">
             <form th:action="@{/students}" method="get">

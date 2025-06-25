@@ -1,0 +1,4 @@
+<div th:fragment="notifications">
+    <div class="notification success" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div class="notification error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+</div>

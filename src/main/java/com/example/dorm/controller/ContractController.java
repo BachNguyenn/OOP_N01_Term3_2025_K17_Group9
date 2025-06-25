@@ -60,7 +60,8 @@ public class ContractController {
     }
 
     @PostMapping
-    public String createContract(@Valid @ModelAttribute Contract contract, BindingResult result, Model model) {
+    public String createContract(@Valid @ModelAttribute Contract contract, BindingResult result, Model model,
+                                 org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             model.addAttribute("rooms", roomService.getAllRooms());
             return "contracts/form";
@@ -72,6 +73,7 @@ public class ContractController {
         }
         try {
             contractService.createContract(contract);
+            redirectAttributes.addFlashAttribute("successMessage", "Tạo hợp đồng thành công");
             return "redirect:/contracts";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Lỗi khi lưu hợp đồng: " + e.getMessage());
@@ -115,7 +117,8 @@ public class ContractController {
     }
 
     @PostMapping("/{id}")
-    public String updateContract(@PathVariable("id") Long id, @Valid @ModelAttribute Contract contract, BindingResult result, Model model) {
+    public String updateContract(@PathVariable("id") Long id, @Valid @ModelAttribute Contract contract, BindingResult result, Model model,
+                                 org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             model.addAttribute("rooms", roomService.getAllRooms());
             return "contracts/form";
@@ -127,6 +130,7 @@ public class ContractController {
         }
         try {
             contractService.updateContract(id, contract);
+            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật hợp đồng thành công");
             return "redirect:/contracts";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Lỗi khi cập nhật hợp đồng: " + e.getMessage());
@@ -135,11 +139,13 @@ public class ContractController {
     }
 
     @GetMapping("/{id}/delete")
-    public String deleteContract(@PathVariable("id") Long id, Model model) {
+    public String deleteContract(@PathVariable("id") Long id, Model model,
+                                 org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         try {
             Optional<Contract> contractOptional = contractService.getContract(id);
             if (contractOptional.isPresent()) {
                 contractService.deleteContract(id);
+                redirectAttributes.addFlashAttribute("successMessage", "Xóa hợp đồng thành công");
                 return "redirect:/contracts";
             } else {
                 model.addAttribute("errorMessage", "Không tìm thấy hợp đồng với ID: " + id);

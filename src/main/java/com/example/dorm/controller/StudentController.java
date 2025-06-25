@@ -71,7 +71,8 @@ public class StudentController {
             @RequestParam(value = "contractEndDate", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate contractEndDate,
             @RequestParam(value = "contractStatus", required = false) String contractStatus,
-            Model model) {
+            Model model,
+            org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         try {
             var saved = studentService.saveStudent(student);
             if (student.getRoom() != null && contractStartDate != null && contractEndDate != null) {
@@ -83,6 +84,7 @@ public class StudentController {
                 c.setStatus(contractStatus != null ? contractStatus : "ACTIVE");
                 contractService.createContract(c);
             }
+            redirectAttributes.addFlashAttribute("successMessage", "Tạo sinh viên thành công");
             return "redirect:/students";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Lỗi khi tạo sinh viên: " + e.getMessage());
@@ -126,12 +128,14 @@ public class StudentController {
     }
 
     @PostMapping("/{id}")
-    public String updateStudent(@PathVariable("id") Long id, @ModelAttribute Student student, Model model) {
+    public String updateStudent(@PathVariable("id") Long id, @ModelAttribute Student student, Model model,
+                               org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         try {
             Optional<Student> studentOptional = studentService.getStudent(id);
             if (studentOptional.isPresent()) {
                 student.setId(id);
                 studentService.saveStudent(student);
+                redirectAttributes.addFlashAttribute("successMessage", "Cập nhật sinh viên thành công");
                 return "redirect:/students";
             } else {
                 model.addAttribute("errorMessage", "Không tìm thấy sinh viên với ID: " + id);
@@ -144,11 +148,13 @@ public class StudentController {
     }
 
     @GetMapping("/{id}/delete")
-    public String deleteStudent(@PathVariable("id") Long id, Model model) {
+    public String deleteStudent(@PathVariable("id") Long id, Model model,
+                               org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         try {
             Optional<Student> studentOptional = studentService.getStudent(id);
             if (studentOptional.isPresent()) {
                 studentService.deleteStudent(id);
+                redirectAttributes.addFlashAttribute("successMessage", "Xóa sinh viên thành công");
                 return "redirect:/students";
             } else {
                 model.addAttribute("errorMessage", "Không tìm thấy sinh viên với ID: " + id);

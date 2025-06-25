@@ -59,7 +59,8 @@ public class FeeController {
     @PostMapping
     public String createFee(@RequestParam("amountInput") String amountInput,
                             @Valid @ModelAttribute Fee fee,
-                            BindingResult result, Model model) {
+                            BindingResult result, Model model,
+                            org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             model.addAttribute("contracts", contractService.getAllContracts(org.springframework.data.domain.Pageable.unpaged()).getContent());
             return "fees/form";
@@ -67,6 +68,7 @@ public class FeeController {
         try {
             fee.setAmount(parseAmount(amountInput));
             feeService.createFee(fee);
+            redirectAttributes.addFlashAttribute("successMessage", "Tạo phí thành công");
             return "redirect:/fees";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Lỗi khi lưu phí: " + e.getMessage());
@@ -113,7 +115,8 @@ public class FeeController {
     public String updateFee(@PathVariable("id") Long id,
                             @RequestParam("amountInput") String amountInput,
                             @Valid @ModelAttribute Fee fee,
-                            BindingResult result, Model model) {
+                            BindingResult result, Model model,
+                            org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             model.addAttribute("contracts", contractService.getAllContracts(org.springframework.data.domain.Pageable.unpaged()).getContent());
             return "fees/form";
@@ -121,6 +124,7 @@ public class FeeController {
         try {
             fee.setAmount(parseAmount(amountInput));
             feeService.updateFee(id, fee);
+            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật phí thành công");
             return "redirect:/fees";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Lỗi khi cập nhật phí: " + e.getMessage());
@@ -137,11 +141,13 @@ public class FeeController {
     }
 
     @GetMapping("/{id}/delete")
-    public String deleteFee(@PathVariable("id") Long id, Model model) {
+    public String deleteFee(@PathVariable("id") Long id, Model model,
+                            org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         try {
             Optional<Fee> feeOptional = feeService.getFee(id);
             if (feeOptional.isPresent()) {
                 feeService.deleteFee(id);
+                redirectAttributes.addFlashAttribute("successMessage", "Xóa phí thành công");
                 return "redirect:/fees";
             } else {
                 model.addAttribute("errorMessage", "Không tìm thấy phí với ID: " + id);

@@ -56,9 +56,11 @@ public class RoomController {
     }
 
     @PostMapping
-    public String createRoom(@ModelAttribute Room room, Model model) {
+    public String createRoom(@ModelAttribute Room room, Model model,
+                             org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         try {
             roomService.createRoom(room);
+            redirectAttributes.addFlashAttribute("successMessage", "Tạo phòng thành công");
             return "redirect:/rooms";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Lỗi khi tạo phòng: " + e.getMessage());
@@ -103,11 +105,13 @@ public class RoomController {
     }
 
     @PostMapping("/{id}")
-    public String updateRoom(@PathVariable("id") Long id, @ModelAttribute Room room, Model model) {
+    public String updateRoom(@PathVariable("id") Long id, @ModelAttribute Room room, Model model,
+                             org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         try {
             Optional<Room> roomOptional = roomService.getRoom(id);
             if (roomOptional.isPresent()) {
                 roomService.updateRoom(id, room);
+                redirectAttributes.addFlashAttribute("successMessage", "Cập nhật phòng thành công");
                 return "redirect:/rooms";
             } else {
                 model.addAttribute("errorMessage", "Không tìm thấy phòng với ID: " + id);
@@ -120,11 +124,13 @@ public class RoomController {
     }
 
     @GetMapping("/{id}/delete")
-    public String deleteRoom(@PathVariable("id") Long id, Model model) {
+    public String deleteRoom(@PathVariable("id") Long id, Model model,
+                             org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         try {
             Optional<Room> roomOptional = roomService.getRoom(id);
             if (roomOptional.isPresent()) {
                 roomService.deleteRoom(id);
+                redirectAttributes.addFlashAttribute("successMessage", "Xóa phòng thành công");
                 return "redirect:/rooms";
             } else {
                 model.addAttribute("errorMessage", "Không tìm thấy phòng với ID: " + id);

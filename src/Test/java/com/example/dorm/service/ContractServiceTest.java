@@ -65,6 +65,18 @@ public class ContractServiceTest {
         when(studentRepository.findById(2L)).thenReturn(Optional.empty());
         assertThrows(IllegalArgumentException.class, () -> contractService.createContract(contract));
     }
+
+    @Test
+    void testCreateContractStudentAlreadyHasContract() {
+        Room room = new Room(); room.setId(1L); room.setCapacity(2);
+        Student student = new Student(); student.setId(2L);
+        Contract contract = new Contract(); contract.setRoom(room); contract.setStudent(student);
+        when(roomRepository.findById(1L)).thenReturn(Optional.of(room));
+        when(studentRepository.countByRoom_Id(1L)).thenReturn(0L);
+        when(studentRepository.findById(2L)).thenReturn(Optional.of(student));
+        when(contractRepository.existsByStudent_Id(2L)).thenReturn(true);
+        assertThrows(IllegalStateException.class, () -> contractService.createContract(contract));
+    }
     @Test
     void testCreateContractSuccess() {
         Room room = new Room(); room.setId(1L); room.setCapacity(2);

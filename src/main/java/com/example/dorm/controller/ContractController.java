@@ -76,6 +76,10 @@ public class ContractController {
             redirectAttributes.addFlashAttribute("message", "Thêm hợp đồng thành công!");
             redirectAttributes.addFlashAttribute("alertClass", "alert-success");
             return "redirect:/contracts";
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("message", e.getMessage());
+            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+            return "redirect:/contracts";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("message", "Thêm hợp đồng thất bại!");
             redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
@@ -133,6 +137,10 @@ public class ContractController {
             contractService.updateContract(id, contract);
             redirectAttributes.addFlashAttribute("message", "Cập nhật hợp đồng thành công!");
             redirectAttributes.addFlashAttribute("alertClass", "alert-success");
+            return "redirect:/contracts";
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("message", e.getMessage());
+            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
             return "redirect:/contracts";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("message", "Cập nhật hợp đồng thất bại!");

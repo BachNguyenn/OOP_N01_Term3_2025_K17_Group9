@@ -58,6 +58,9 @@ public class ContractService {
     public Contract createContract(Contract contract) {
         checkRoomCapacity(contract.getRoom(), contract.getStudent() != null ? contract.getStudent().getId() : null);
         if (contract.getStudent() != null && contract.getStudent().getId() != null) {
+            if (contractRepository.existsByStudent_Id(contract.getStudent().getId())) {
+                throw new IllegalStateException("Đã có hợp đồng");
+            }
             var student = studentRepository.findById(contract.getStudent().getId())
                     .orElseThrow(() -> new IllegalArgumentException("Student not found"));
             student.setRoom(contract.getRoom());
@@ -76,11 +79,15 @@ public class ContractService {
         if (!existing.getRoom().getId().equals(contract.getRoom().getId())
                 || (newStudentId != null && !newStudentId.equals(existingStudentId))) {
             checkRoomCapacity(contract.getRoom(), newStudentId);
-         if (existingStudentId != null && (newStudentId == null || !existingStudentId.equals(newStudentId))) {
-            studentRepository.findById(existingStudentId).ifPresent(s -> {
-                s.setRoom(null);
-                studentRepository.save(s);
-            });
+            if (newStudentId != null && !newStudentId.equals(existingStudentId) &&
+                    contractRepository.existsByStudent_Id(newStudentId)) {
+                throw new IllegalStateException("Đã có hợp đồng");
+            }
+           if (existingStudentId != null && (newStudentId == null || !existingStudentId.equals(newStudentId))) {
+               studentRepository.findById(existingStudentId).ifPresent(s -> {
+                   s.setRoom(null);
+                   studentRepository.save(s);
+               });
         }
 
         if (newStudentId != null) {
